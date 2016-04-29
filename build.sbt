@@ -26,10 +26,10 @@ lazy val buildSettings = Seq(
   )
 )
 
-val akkaV         = "2.4.3"
+val akkaV         = "2.4.4"
 val scalaTestV    = "2.2.6"
-val playJsonV     = "2.5.1"
-val akkaPlayJsonV = "1.5.3"
+val playJsonV     = "2.5.2"
+val akkaPlayJsonV = "1.6.0"
 
 lazy val `template` = project
   .in(file("."))

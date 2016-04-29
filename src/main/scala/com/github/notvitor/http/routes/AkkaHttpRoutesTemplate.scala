@@ -20,16 +20,14 @@ import akka.http.scaladsl.coding.Gzip
 import akka.http.scaladsl.model.headers.RawHeader
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import com.github.notvitor.http.config.ServerSettingsTemplate
+import com.github.notvitor.http.config.ServerSettingsTemplate._
 import com.github.notvitor.http.model.{ ApiMessage, ApiStatusMessages, ModelTemplate }
 import de.heikoseeberger.akkahttpplayjson.PlayJsonSupport._
 import com.github.notvitor.http.repository.RepositoryTemplate
 import scala.concurrent.Future
 
 
-object AkkaHttpRoutesTemplate extends ResponseFactory {
-
-  import ServerSettingsTemplate._
+object AkkaHttpRoutesTemplate extends BaseRoute with ResponseFactory {
 
   protected def templateDirectives: Route =
     pathPrefix("service1") {
@@ -61,31 +59,12 @@ object AkkaHttpRoutesTemplate extends ResponseFactory {
         }
     }
 
-  protected lazy val apiV1: Route =
-    respondWithHeaders(
-      RawHeader("Access-Control-Allow-Origin", "*"),
-      RawHeader("Access-Control-Allow-Methods", "POST, GET, PUT, PATCH, DELETE")
-    ) {
-        pathPrefix("api" / "v1") {
-          encodeResponseWith(Gzip) {
-            templateDirectives
-          }
-        }
-      }
+  protected lazy val apiV1: Route = api(this.templateDirectives, prefix = true, "v1")
 
   protected lazy val apiV2: Route =
-    respondWithHeaders(
-      RawHeader("Access-Control-Allow-Origin", "*"),
-      RawHeader("Access-Control-Allow-Methods", "POST, GET")
-    ) {
-        pathPrefix("api" / "v2") {
-          encodeResponseWith(Gzip) {
-            logRequestResult("log-service1") {
-              templateDirectives
-            }
-          }
-        }
-      }
+    api(dsl = logRequestResult("log-service") {
+      this.templateDirectives
+    }, prefix = true, version = "v2")
 
   def availableRoutes: Route = apiV1 ~ apiV2
 

@@ -20,7 +20,7 @@ import akka.http.scaladsl.marshalling.ToResponseMarshallable
 import akka.http.scaladsl.model.StatusCodes.InternalServerError
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import com.github.notvitor.http.config.ServerSettingsTemplate
+import com.github.notvitor.http.config.ServerSettingsTemplate._
 import com.github.notvitor.http.model.{ApiMessage, ApiStatusMessages}
 import de.heikoseeberger.akkahttpplayjson.PlayJsonSupport._
 import scala.concurrent.Future
@@ -28,8 +28,6 @@ import scala.util.{Failure, Success}
 
 
 trait ResponseFactory {
-
-  import ServerSettingsTemplate._
 
   def sendResponse[T](eventualResult: Future[T])(implicit marshaller: T ⇒ ToResponseMarshallable): Route = {
     onComplete(eventualResult) {
